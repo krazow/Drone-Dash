@@ -37,7 +37,7 @@ Re-running `install.sh` updates the code and keeps your settings and data.
 
 ## Releasing
 
-Type **`/releasenow`** in a Claude chat on this repo. It bumps `VERSION`, adds a `CHANGELOG.md` entry and starts the shared [Krazow release kit](https://github.com/krazow/release-kit) pipeline: the shell-script check and `tests/smoke_test.py`, then a pre-release with `DroneDash-<version>-beta.N.zip` (install it with `sudo ./update.sh beta`). When it's good, **`/releasenow promote`** publishes `DroneDash-<version>.zip` as the Latest release, which `sudo ./update.sh` installs. `/releasenow status` shows what's where. The version shows in `/api/state`.
+Type **`/release now`** in a Claude chat on this repo. It bumps `VERSION`, adds a `CHANGELOG.md` entry and starts the shared [Krazow release kit](https://github.com/krazow/release-kit) pipeline: the shell-script check and `tests/smoke_test.py`, then a pre-release with `DroneDash-<version>-beta.N.zip` (install it with `sudo ./update.sh beta`). When it's good, **`/release promote`** publishes `DroneDash-<version>.zip` as the Latest release, which `sudo ./update.sh` installs. `/release status` shows what's where. The version shows in `/api/state`.
 
 ## 3. Connect the test node (Mesh-Mapper)
 
