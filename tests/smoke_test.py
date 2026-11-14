@@ -32,6 +32,22 @@ def check(cond, msg):
         raise SystemExit(1)
 
 
+def check_live_push():
+    """The page gets new detections over a WebSocket. Needs the 'websockets' package
+    (installed with uvicorn[standard]); skipped where it isn't available."""
+    try:
+        from websockets.sync.client import connect
+    except ImportError:
+        print("SKIP live WebSocket push (websockets package not installed)")
+        return
+    with connect(f"ws://127.0.0.1:{PORT}/ws", open_timeout=5) as ws:
+        call("/api/ingest?node=dayton-1", {"uas_id": "1581F5ABCDEF1234567", "id_type": "serial",
+                                           "lat": 46.32, "lon": -117.97})
+        msg = json.loads(ws.recv(timeout=5))
+    check(msg["type"] == "track" and msg["track"]["track_id"] == "1581F5ABCDEF1234567",
+          "new detection is pushed live over the WebSocket")
+
+
 def main():
     db = os.path.join(tempfile.mkdtemp(), "test.sqlite")
     env = dict(os.environ, APP_DB=db, APP_NAME="Test Dash")
@@ -77,6 +93,7 @@ def main():
         check(by_id["1748C1234567890ABC"]["spoof"] == 1
               and by_id["1748C1234567890ABC"]["manufacturer"] == "Autel Robotics", "impossible jump -> spoof flag")
         check(len(call("/api/history?hours=1")) == 5, "history lists all 5 tracks")
+        check_live_push()
         print("All checks passed.")
     finally:
         srv.terminate()
