@@ -2,6 +2,7 @@
 # Install Drone Dash as a service on a Raspberry Pi (Raspberry Pi OS / Ubuntu).
 # Usage:  sudo ./install.sh                       (run from this folder)
 #         sudo APP_SLUG=other-name ./install.sh    (install under a different folder/service name)
+#         sudo APP_PORT=8081 ./install.sh            (serve on another port; update.sh beta uses this)
 # Re-running is safe: it updates the code and keeps your settings and data.
 set -euo pipefail
 cd "$(dirname "$0")"                   # so it works when called from rename.sh or another folder
@@ -9,6 +10,7 @@ APP_SLUG=${APP_SLUG:-drone-dash}          # folder, settings file and service na
 APP_DIR=/opt/$APP_SLUG
 ENV_FILE=/etc/default/$APP_SLUG
 USER_NAME=${SUDO_USER:-pi}
+APP_PORT=${APP_PORT:-8080}
 
 apt-get update
 apt-get install -y python3-venv
@@ -43,7 +45,7 @@ After=network-online.target
 User=$USER_NAME
 WorkingDirectory=$APP_DIR
 EnvironmentFile=$ENV_FILE
-ExecStart=$APP_DIR/venv/bin/uvicorn server:app --host 0.0.0.0 --port 8080
+ExecStart=$APP_DIR/venv/bin/uvicorn server:app --host 0.0.0.0 --port $APP_PORT
 Restart=always
 
 [Install]
@@ -53,4 +55,4 @@ EOF
 systemctl daemon-reload
 systemctl enable "$APP_SLUG"
 systemctl restart "$APP_SLUG"
-echo "Running as service '$APP_SLUG': http://$(hostname -I | awk '{print $1}'):8080"
+echo "Running as service '$APP_SLUG': http://$(hostname -I | awk '{print $1}'):$APP_PORT"

@@ -19,7 +19,7 @@ python3 simulator.py                    # terminal 2 (runs 5 minutes)
 
 Open http://localhost:8080. An identified DJI drone circles Waitsburg, a DJI DroneID drone drifts nearby, and a MAC-only Remote ID drone flies at Dayton for 30 s. After about 95 s, an "unknown drone" ring starts pulsing at Dayton.
 
-To run the automated checks (GitHub runs these on every push): `python3 tests/smoke_test.py`.
+To run the automated checks (GitHub runs these on every pull request and push to `main`): `python3 tests/smoke_test.py`.
 
 ## 2. Install on the Pi
 
@@ -32,6 +32,12 @@ sudo systemctl restart drone-dash
 The dashboard is then at `http://<pi-address>:8080` on your home network. To reach it from anywhere, install Tailscale on the Pi and on your phone. Don't open the port on your router: the page has no login.
 
 Re-running `install.sh` updates the code and keeps your settings and data.
+
+**Updating from GitHub:** `sudo ./update.sh` downloads the latest release and installs it, keeping your settings and data. `sudo ./update.sh beta` installs the newest beta **beside** it, as a separate service `drone-dash-beta` on port 8081 with its own settings (`/etc/default/drone-dash-beta`) and data, so the real dashboard keeps running. Point a node's webhook at port 8081 to feed the beta.
+
+## Releasing
+
+Type **`/release now`** in a Claude chat on this repo. It bumps `VERSION`, adds a `CHANGELOG.md` entry and starts the shared [Krazow release kit](https://github.com/krazow/release-kit) pipeline: the shell-script check and `tests/smoke_test.py`, then a pre-release with `DroneDash-<version>-beta.N.zip` (install it with `sudo ./update.sh beta`). When it's good, **`/release promote`** publishes `DroneDash-<version>.zip` as the Latest release, which `sudo ./update.sh` installs. `/release status` shows what's where. The version shows in `/api/state`.
 
 ## 3. Connect the test node (Mesh-Mapper)
 

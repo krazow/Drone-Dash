@@ -1,20 +1,16 @@
+# Runs the shared Krazow release kit's QA (tests + release checks) on every pull request and push to main.
 name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
 
+# A newer run on the same branch or pull request cancels the older one.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Check shell scripts
-        run: bash -n install.sh && bash -n rename.sh
-      - name: Smoke test
-        run: python tests/smoke_test.py
+  qa:
+    uses: krazow/release-kit/.github/workflows/qa.yml@v1
