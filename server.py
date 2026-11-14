@@ -34,6 +34,7 @@ TOKEN = os.environ.get("APP_TOKEN", "")            # shared secret for /api/inge
 NTFY_URL = os.environ.get("APP_NTFY_URL", "")      # e.g. https://ntfy.sh/your-secret-topic
 LIVE_SECS = int(os.environ.get("APP_LIVE_SECS", "120"))
 RETENTION_DAYS = int(os.environ.get("APP_RETENTION_DAYS", "90"))
+APP_VERSION = "1.0.0"   # set by the release kit at each release (github.com/krazow/release-kit)
 APP_NAME = os.environ.get("APP_NAME", "Drone Dash")   # change the product name here (or in the env file)
 MAX_SPEED_MPS = 60.0                                # faster than this between fixes = spoof flag
 RF_MIN_HITS = 3                                     # RF hits within RF_WINDOW before "unknown drone"
@@ -332,7 +333,7 @@ async def state(request: Request):
                           (now - 86400,)).fetchall()
     nodes = [{"node": n, "lat": p[0], "lon": p[1], "last_seen": seen.get(n, {}).get("last_seen")}
              for n, p in NODES.items()]
-    return JSONResponse({"app_name": APP_NAME, "now": now, "live_secs": LIVE_SECS, "nodes": nodes, "tracks": live,
+    return JSONResponse({"app_name": APP_NAME, "version": APP_VERSION, "now": now, "live_secs": LIVE_SECS, "nodes": nodes, "tracks": live,
                          "last24h": {r[0]: r[1] for r in day}})
 
 

@@ -1,0 +1,14 @@
+{
+  "id": "dronedash",
+  "name": "Drone Dash",
+  "description": "A live map of drones detected by sensor nodes, running on a Raspberry Pi.",
+  "type": "server",
+  "setup": ["pip install -r requirements.txt"],
+  "test": ["python3 tests/smoke_test.py"],
+  "version": [{ "file": "server.py", "pattern": "APP_VERSION = \"([^\"]*)\"" }],
+  "android": { "enabled": false },
+  "windows": { "enabled": false },
+  "ios": { "enabled": false },
+  "macos": { "enabled": false },
+  "extras": { "enabled": true, "custom": "bash scripts/package.sh" }
+}
